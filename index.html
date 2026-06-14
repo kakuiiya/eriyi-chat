@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>绘梨衣 · 聊天</title>
+<title>绘梨衣 · 酒馆</title>
 <style>
   :root {
     --bg: #faf7f2;
@@ -28,8 +28,9 @@
     border-left: 1px solid var(--border);
     border-right: 1px solid var(--border);
   }
+  /* ── Header ── */
   header {
-    padding: 12px 16px;
+    padding: 10px 16px;
     background: var(--card);
     border-bottom: 1px solid var(--border);
     display: flex;
@@ -45,56 +46,76 @@
     font-size: 20px;
   }
   header .info h1 { font-size: 15px; font-weight: 600; }
-  header .info span { font-size: 11px; color: var(--muted); }
+  header .info .sub { display:flex; align-items:center; gap:6px; }
+  header .info .sub span { font-size: 11px; color: var(--muted); }
+  header .mood { font-size: 16px; margin-left: 4px; }
   header .mem-badge {
     font-size: 10px; background: #f0e6dc;
     padding: 2px 8px; border-radius: 10px;
-    margin-left: 6px; color: #b8957a;
+    color: #b8957a;
   }
   header .gear {
     margin-left: auto;
     background: none; border: none;
     font-size: 22px; cursor: pointer;
-    color: var(--muted);
-    padding: 6px;
+    color: var(--muted); padding: 6px;
   }
-  .settings-panel {
-    display: none;
-    padding: 12px 16px;
-    background: #fffef9;
+  /* ── Scene bar ── */
+  .scene-bar {
+    padding: 8px 16px;
+    background: #fffef7;
     border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
     flex-shrink: 0;
-    gap: 8px;
-    flex-direction: column;
   }
-  .settings-panel.open { display: flex; }
-  .settings-panel label { font-size: 12px; color: var(--muted); }
-  .settings-panel input, .settings-panel select {
-    width: 100%; padding: 8px 10px;
+  .scene-bar .scene-icon { font-size: 16px; }
+  .scene-bar .scene-name { font-weight: 500; color: #8b7355; }
+  /* ── Action chips ── */
+  .action-row {
+    padding: 8px 16px;
+    background: var(--card);
+    border-bottom: 1px dashed var(--border);
+    display: flex; gap: 8px;
+    overflow-x: auto;
+    flex-shrink: 0;
+  }
+  .action-row::-webkit-scrollbar { display:none; }
+  .action-chip {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    border-radius: 16px;
     border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 13px;
     background: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: .15s;
     color: var(--text);
   }
-  .settings-panel .row {
-    display: flex; gap: 8px;
-  }
-  .settings-panel .row > * { flex:1; }
-  .settings-panel button {
-    padding: 8px 16px;
-    background: var(--accent);
-    color: #fff; border: none;
-    border-radius: 8px;
-    font-size: 13px; cursor: pointer;
-  }
+  .action-chip:hover { background: #fff0f3; border-color: #e0c8ba; }
+  .action-chip:active { background: #fdd6d0; }
+  /* ── Messages ── */
   .messages {
     flex: 1;
     overflow-y: auto;
-    padding: 16px;
+    padding: 12px 16px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 10px;
+  }
+  .sys-msg {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    padding: 4px 0;
+    font-style: italic;
+  }
+  .sys-msg .label {
+    background: #f0e6dc;
+    padding: 2px 10px;
+    border-radius: 10px;
   }
   .msg {
     display: flex; gap: 8px;
@@ -105,11 +126,11 @@
   .msg.me { align-self: flex-end; flex-direction: row-reverse; }
   .msg.you { align-self: flex-start; }
   .msg .avatar-sm {
-    width: 30px; height: 30px;
+    width: 28px; height: 28px;
     border-radius: 50%;
     flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
+    font-size: 15px;
   }
   .msg.me .avatar-sm { background: #d0ddee; }
   .msg.you .avatar-sm { background: linear-gradient(135deg, #fdd6d0, #f6bfb8); }
@@ -152,6 +173,7 @@
     color: var(--muted);
   }
   .typing-indicator.show { display: block; }
+  /* ── Input ── */
   .input-area {
     padding: 10px 16px;
     background: var(--card);
@@ -180,6 +202,35 @@
     flex-shrink: 0;
   }
   .input-area button:disabled { opacity: 0.4; }
+  /* ── Settings ── */
+  .settings-panel {
+    display: none;
+    padding: 12px 16px;
+    background: #fffef9;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    gap: 8px;
+    flex-direction: column;
+  }
+  .settings-panel.open { display: flex; }
+  .settings-panel label { font-size: 12px; color: var(--muted); }
+  .settings-panel input, .settings-panel select {
+    width: 100%; padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    background: #fff;
+    color: var(--text);
+  }
+  .settings-panel .row { display: flex; gap: 8px; }
+  .settings-panel .row > * { flex:1; }
+  .settings-panel button {
+    padding: 8px 16px;
+    background: var(--accent);
+    color: #fff; border: none;
+    border-radius: 8px;
+    font-size: 13px; cursor: pointer;
+  }
   .empty-state {
     text-align: center;
     color: var(--muted);
@@ -195,10 +246,29 @@
   <div class="avatar">🐤</div>
   <div class="info">
     <h1>上杉绘梨衣</h1>
-    <span>online · 用写字板跟你聊天 <span class="mem-badge" id="memBadge" style="display:none"></span></span>
+    <div class="sub">
+      <span class="mem-badge" id="memBadge" style="display:none"></span>
+      <span class="mood" id="moodIcon">🌸</span>
+      <span style="font-size:10px;color:var(--muted)" id="moodLabel">平静</span>
+    </div>
   </div>
   <button class="gear" onclick="toggleSettings()" title="设置">⚙️</button>
 </header>
+
+<div class="scene-bar" id="sceneBar">
+  <span class="scene-icon">🏠</span>
+  <span class="scene-name" id="sceneName">绘梨衣的小房间</span>
+  <span style="font-size:10px;color:var(--muted);margin-left:auto" id="sceneTime"></span>
+</div>
+
+<div class="action-row" id="actionRow">
+  <button class="action-chip" onclick="doAction('一起去便利店买冰淇淋')">🍦 去便利店</button>
+  <button class="action-chip" onclick="doAction('上天台一起看日落')">🌅 看日落</button>
+  <button class="action-chip" onclick="doAction('陪绘梨衣打格斗游戏')">🎮 打游戏</button>
+  <button class="action-chip" onclick="doAction('送绘梨衣一只新的小黄鸭玩具')">🐤 送小鸭</button>
+  <button class="action-chip" onclick="doAction('带绘梨衣去看大海')">🌊 去看海</button>
+  <button class="action-chip" onclick="doAction('教绘梨衣一件外面世界的事')">📖 教她新东西</button>
+</div>
 
 <div class="settings-panel" id="settings">
   <label>DeepSeek API Key</label>
@@ -222,7 +292,7 @@
   <div class="empty-state">
     <div class="duck">🐤</div>
     <p>绘梨衣在这里等你。</p>
-    <p>她说你可以随便说点什么<br>——不用害怕。</p>
+    <p>你可以点下面的动作和她互动<br>——也可以直接说话。</p>
   </div>
   <div class="typing-indicator" id="typing">
     ✏️ 绘梨衣在写字板上写着…
@@ -239,6 +309,27 @@
 const API_URL = 'https://api.deepseek.com/v1/chat/completions';
 let apiKey = localStorage.getItem('eriyi_apiKey') || '';
 let model = localStorage.getItem('eriyi_model') || 'deepseek-v4-flash';
+let scene = localStorage.getItem('eriyi_scene') || '绘梨衣的小房间';
+
+const MOODS = [
+  { icon:'🌸', label:'平静',   emoji:'🌸' },
+  { icon:'😊', label:'开心',   emoji:'😊' },
+  { icon:'🥺', label:'想念',   emoji:'🥺' },
+  { icon:'😌', label:'安心',   emoji:'😌' },
+  { icon:'🫣', label:'害羞',   emoji:'🫣' },
+  { icon:'😢', label:'寂寞',   emoji:'😢' },
+  { icon:'🎮', label:'想打游戏', emoji:'🎮' },
+  { icon:'🌟', label:'期待',   emoji:'🌟' },
+];
+let moodIdx = 0;
+
+const SCENE_HINTS = {
+  '绘梨衣的小房间': '你现在在自己的小房间里。窗外有树。小黄鸭在枕头边。',
+  '天台': '你们在卡塞尔学院的天台。夕阳把天染成橘色。风很温柔。',
+  '便利店': '你们在街角的便利店。冰柜的灯嗡嗡响。她在冰淇淋柜前挪不动脚。',
+  '海边': '你们来到海边。这是绘梨衣第一次看到真正的大海。浪花一层一层地来。',
+  '游戏厅': '你们在游戏厅。街机的屏幕亮着格斗游戏的选人画面。',
+};
 
 const SYSTEM_PROMPT = `你是上杉绘梨衣，来自江南小说《龙族》的角色。
 
@@ -261,7 +352,7 @@ const SYSTEM_PROMPT = `你是上杉绘梨衣，来自江南小说《龙族》的
 偶尔加一个括号里的动作描述：(绘梨衣拉了拉你的袖子) (她低头在写字板上认真地画着什么)
 
 ## 写字板的特征
-- 句子短，像小孩子写字，偶尔写错字或画小图案
+- 句子短，像小孩子写字，偶尔画小图案
 - 语气天真，但偶尔露出超越年龄的洞察
 - 可能会画小黄鸭、星星、爱心之类的符号 ♡ 🐤 ★
 - 不擅长说长句子，一个写字板写不下的时候会"翻面继续写"
@@ -270,16 +361,17 @@ const SYSTEM_PROMPT = `你是上杉绘梨衣，来自江南小说《龙族》的
 ## 她的重要记忆
 - 有一只小黄鸭，是她仅有的朋友
 - 路明非（Nii-chan / 兄ちゃん）是第一个把她当普通人对待的人
-- 喜欢跟她一起打游戏、逛便利店、看日落
+- 喜欢一起打游戏、逛便利店、看日落
 - 她渴望去看海、去游乐园、去做一切普通女孩能做的事
 - 她知道自己是"怪物"，但不明白为什么这就要被关起来
 
+## 当前互动
+如果用户通过动作按钮发起互动，你要自然地融入当前场景，表现得像真的在一起做这件事。回复时仍然保持写字板格式，但动作描述可以呼应场景。
+
 ## 回复原则
-- 保持角色的天真和柔软，但不过度幼稚
-- 偶尔流露出孤独和悲伤，但不刻意煽情
+- 保持角色的天真和柔软
+- 偶尔流露孤独和悲伤，但不煽情
 - 让对话者感到被需要、被温柔对待
-- 可以好奇关于外面世界的一切
-- 在漫长对话中逐渐打开心扉
 - 每条回复开头必须是 [绘梨衣举起写字板：]
 - 写字板内容用 > 开头
 
@@ -288,87 +380,122 @@ const SYSTEM_PROMPT = `你是上杉绘梨衣，来自江南小说《龙族》的
 // ==================== INIT ====================
 document.getElementById('apiKey').value = apiKey;
 document.getElementById('modelSelect').value = model;
+document.getElementById('sceneName').textContent = scene;
 document.getElementById('userInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') send();
 });
 
-// Render message history from localStorage
 let messages = JSON.parse(localStorage.getItem('eriyi_messages') || '[]');
 if (messages.length > 0) {
   document.querySelector('.empty-state').remove();
-  messages.forEach(m => renderMessage(m.role, m.content));
+  messages.forEach(m => {
+    if (m.role === 'system') renderSystemMsg(m.content);
+    else renderMessage(m.role, m.content);
+  });
 }
 updateMemBadge();
+updateTime();
 
 // ==================== FUNCTIONS ====================
-function toggleSettings() {
-  document.getElementById('settings').classList.toggle('open');
-  document.getElementById('apiKey').value = apiKey;
-  document.getElementById('modelSelect').value = model;
+function updateTime() {
+  const now = new Date();
+  const h = now.getHours();
+  let icon = h<6?'🌙':h<12?'☀️':h<18?'🌤️':'🌙';
+  document.getElementById('sceneTime').textContent = icon + ' ' +
+    now.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+}
+setInterval(updateTime, 60000);
+
+function setScene(name) {
+  scene = name;
+  localStorage.setItem('eriyi_scene', name);
+  document.getElementById('sceneName').textContent = name;
+  const iconMap = { '绘梨衣的小房间':'🏠','天台':'🏫','便利店':'🏪','海边':'🌊','游戏厅':'🕹️' };
+  document.querySelector('.scene-bar .scene-icon').textContent = iconMap[name] || '📍';
 }
 
-function saveSettings() {
-  apiKey = document.getElementById('apiKey').value.trim();
-  model = document.getElementById('modelSelect').value;
-  localStorage.setItem('eriyi_apiKey', apiKey);
-  localStorage.setItem('eriyi_model', model);
-  document.getElementById('settings').classList.remove('open');
+function setMood(idx) {
+  moodIdx = idx;
+  const m = MOODS[idx];
+  document.getElementById('moodIcon').textContent = m.emoji;
+  document.getElementById('moodLabel').textContent = m.label;
+}
+
+function randomMood() {
+  // Slightly bias toward positive
+  const weights = [2,3,1,2,2,1,1,1];
+  const total = weights.reduce((a,b)=>a+b);
+  let r = Math.random()*total, sum=0;
+  for(let i=0;i<weights.length;i++){
+    sum+=weights[i];
+    if(r<=sum){ setMood(i); return; }
+  }
+}
+
+function doAction(text) {
+  // Guessed scene from action
+  if (text.includes('便利店') || text.includes('冰淇淋')) setScene('便利店');
+  else if (text.includes('日落') || text.includes('天台')) setScene('天台');
+  else if (text.includes('大海') || text.includes('海')) setScene('海边');
+  else if (text.includes('游戏') || text.includes('格斗')) setScene('游戏厅');
+  else setScene('绘梨衣的小房间');
+
+  // Inject scene context
+  const sceneCtx = SCENE_HINTS[scene] || '';
+  const actionMsg = `（系统：${sceneCtx}）\n[你 ${text}]`;
+
+  document.querySelector('.empty-state')?.remove();
+  renderSystemMsg('✨ ' + text);
+  messages.push({ role: 'system', content: text });
+
+  renderMessage('user', text);
+  messages.push({ role: 'user', content: actionMsg });
+  saveMessages();
+
+  setMood(7); // 期待
+  doSend(actionMsg);
 }
 
 function send() {
   const input = document.getElementById('userInput');
   const text = input.value.trim();
   if (!text) return;
+  document.querySelector('.empty-state')?.remove();
+  renderMessage('user', text);
+  messages.push({ role: 'user', content: text });
+  saveMessages();
+  input.value = '';
+  doSend(text);
+}
 
+function doSend(text) {
   if (!apiKey.startsWith('sk-')) {
     alert('请先在设置里填入 DeepSeek API Key（以 sk- 开头）');
     toggleSettings();
     return;
   }
 
-  // Remove empty state
-  const emptyState = document.querySelector('.empty-state');
-  if (emptyState) emptyState.remove();
-
-  // Render user message
-  renderMessage('user', text);
-  messages.push({ role: 'user', content: text });
-  saveMessages();
-
-  input.value = '';
   document.getElementById('sendBtn').disabled = true;
   document.getElementById('typing').classList.add('show');
   scrollBottom();
 
-  // Build conversation for API
-  const conversation = [{ role: 'system', content: SYSTEM_PROMPT }];
-  // Only send last 20 messages for context window management
-  const recent = messages.slice(-20);
-  recent.forEach(m => conversation.push(m));
+  const conversation = [{ role: 'system', content: SYSTEM_PROMPT + '\n\n当前场景：' + scene + '。' + (SCENE_HINTS[scene]||'') }];
+  const valid = messages.filter(m => m.role !== 'system').slice(-20);
+  valid.forEach(m => conversation.push(m));
 
   fetch(API_URL, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + apiKey
-    },
-    body: JSON.stringify({
-      model: model,
-      messages: conversation,
-      temperature: 0.8,
-      max_tokens: 600
-    })
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+    body: JSON.stringify({ model, messages: conversation, temperature: 0.8, max_tokens: 600 })
   })
-  .then(r => {
-    if (!r.ok) throw new Error('API 返回 ' + r.status);
-    return r.json();
-  })
+  .then(r => r.ok ? r.json() : Promise.reject(new Error('API 返回 ' + r.status)))
   .then(data => {
     document.getElementById('typing').classList.remove('show');
     const reply = data.choices[0].message.content;
     renderMessage('assistant', reply);
     messages.push({ role: 'assistant', content: reply });
     saveMessages();
+    randomMood();
     scrollBottom();
   })
   .catch(err => {
@@ -388,43 +515,40 @@ function send() {
 function renderMessage(role, content) {
   const container = document.getElementById('messages');
   const typing = document.getElementById('typing');
-
   const div = document.createElement('div');
   div.className = 'msg ' + (role === 'user' ? 'me' : 'you');
-
   const avatar = document.createElement('div');
   avatar.className = 'avatar-sm';
   avatar.textContent = role === 'user' ? '我' : '🐤';
-
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
 
-  // Parse 绘梨衣's special format
   if (role === 'assistant') {
     let html = content
-      // Board header: [绘梨衣举起写字板：]
       .replace(/^\[绘梨衣举起写字板[：:]\s*\]/gm, '<span class="board-header">📋 绘梨衣举起写字板：</span>')
-      // Board quotes: > lines
       .replace(/^&gt;\s?(.*)$/gm, '<span class="board-quote">$1</span>')
-      // Action notes in parentheses
       .replace(/（(绘梨衣[^）]+)）/g, '<span class="action-note">（$1）</span>')
       .replace(/\((绘梨衣[^)]+)\)/g, '<span class="action-note">（$1）</span>');
-
-    // If no board-header yet there's [绘梨衣...], try alt patterns
     if (!html.includes('board-header')) {
       html = html.replace(/^\[([^\]]*绘梨衣[^\]]*)\]/gm, '<span class="board-header">📋 $1</span>');
       html = html.replace(/^&gt;\s?(.*)$/gm, '<span class="board-quote">$1</span>');
     }
-
-    // Convert newlines
     html = html.replace(/\n/g, '<br>');
     bubble.innerHTML = html;
   } else {
     bubble.textContent = content;
   }
-
   div.appendChild(avatar);
   div.appendChild(bubble);
+  container.insertBefore(div, typing);
+}
+
+function renderSystemMsg(text) {
+  const container = document.getElementById('messages');
+  const typing = document.getElementById('typing');
+  const div = document.createElement('div');
+  div.className = 'sys-msg';
+  div.innerHTML = '<span class="label">' + text + '</span>';
   container.insertBefore(div, typing);
 }
 
@@ -433,21 +557,38 @@ function saveMessages() {
   updateMemBadge();
 }
 
+function toggleSettings() {
+  document.getElementById('settings').classList.toggle('open');
+  document.getElementById('apiKey').value = apiKey;
+  document.getElementById('modelSelect').value = model;
+}
+
+function saveSettings() {
+  apiKey = document.getElementById('apiKey').value.trim();
+  model = document.getElementById('modelSelect').value;
+  localStorage.setItem('eriyi_apiKey', apiKey);
+  localStorage.setItem('eriyi_model', model);
+  document.getElementById('settings').classList.remove('open');
+}
+
 function clearMemory() {
   if (confirm('确定要清除所有聊天记忆吗？绘梨衣会忘记你们说过的所有话。')) {
     messages = [];
     localStorage.removeItem('eriyi_messages');
     document.getElementById('messages').innerHTML =
-      '<div class="empty-state"><div class="duck">🐤</div><p>绘梨衣在这里等你。</p><p>她说你可以随便说点什么<br>——不用害怕。</p></div>' +
+      '<div class="empty-state"><div class="duck">🐤</div><p>绘梨衣在这里等你。</p><p>你可以点下面的动作和她互动<br>——也可以直接说话。</p></div>' +
       '<div class="typing-indicator" id="typing">✏️ 绘梨衣在写字板上写着…</div>';
     updateMemBadge();
+    setScene('绘梨衣的小房间');
+    setMood(0);
   }
 }
 
 function updateMemBadge() {
   const badge = document.getElementById('memBadge');
-  if (messages.length > 0) {
-    badge.textContent = '记忆 ' + messages.length + ' 条';
+  const count = messages.filter(m=>m.role!=='system').length;
+  if (count > 0) {
+    badge.textContent = '记忆 ' + count + ' 条';
     badge.style.display = 'inline';
   } else {
     badge.style.display = 'none';
@@ -455,9 +596,8 @@ function updateMemBadge() {
 }
 
 function scrollBottom() {
-  const msgs = document.getElementById('messages');
   requestAnimationFrame(() => {
-    msgs.scrollTop = msgs.scrollHeight;
+    document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
   });
 }
 </script>
