@@ -46,6 +46,11 @@
   }
   header .info h1 { font-size: 15px; font-weight: 600; }
   header .info span { font-size: 11px; color: var(--muted); }
+  header .mem-badge {
+    font-size: 10px; background: #f0e6dc;
+    padding: 2px 8px; border-radius: 10px;
+    margin-left: 6px; color: #b8957a;
+  }
   header .gear {
     margin-left: auto;
     background: none; border: none;
@@ -190,7 +195,7 @@
   <div class="avatar">🐤</div>
   <div class="info">
     <h1>上杉绘梨衣</h1>
-    <span>online · 用写字板跟你聊天</span>
+    <span>online · 用写字板跟你聊天 <span class="mem-badge" id="memBadge" style="display:none"></span></span>
   </div>
   <button class="gear" onclick="toggleSettings()" title="设置">⚙️</button>
 </header>
@@ -208,6 +213,7 @@
     </div>
     <div style="display:flex;align-items:flex-end;">
       <button onclick="saveSettings()">💾 保存</button>
+      <button onclick="clearMemory()" style="background:#d88;margin-top:6px;">🗑️ 清除记忆</button>
     </div>
   </div>
 </div>
@@ -286,12 +292,13 @@ document.getElementById('userInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') send();
 });
 
-// Render message history from sessionStorage
-let messages = JSON.parse(sessionStorage.getItem('eriyi_messages') || '[]');
+// Render message history from localStorage
+let messages = JSON.parse(localStorage.getItem('eriyi_messages') || '[]');
 if (messages.length > 0) {
   document.querySelector('.empty-state').remove();
   messages.forEach(m => renderMessage(m.role, m.content));
 }
+updateMemBadge();
 
 // ==================== FUNCTIONS ====================
 function toggleSettings() {
@@ -422,7 +429,29 @@ function renderMessage(role, content) {
 }
 
 function saveMessages() {
-  sessionStorage.setItem('eriyi_messages', JSON.stringify(messages));
+  localStorage.setItem('eriyi_messages', JSON.stringify(messages));
+  updateMemBadge();
+}
+
+function clearMemory() {
+  if (confirm('确定要清除所有聊天记忆吗？绘梨衣会忘记你们说过的所有话。')) {
+    messages = [];
+    localStorage.removeItem('eriyi_messages');
+    document.getElementById('messages').innerHTML =
+      '<div class="empty-state"><div class="duck">🐤</div><p>绘梨衣在这里等你。</p><p>她说你可以随便说点什么<br>——不用害怕。</p></div>' +
+      '<div class="typing-indicator" id="typing">✏️ 绘梨衣在写字板上写着…</div>';
+    updateMemBadge();
+  }
+}
+
+function updateMemBadge() {
+  const badge = document.getElementById('memBadge');
+  if (messages.length > 0) {
+    badge.textContent = '记忆 ' + messages.length + ' 条';
+    badge.style.display = 'inline';
+  } else {
+    badge.style.display = 'none';
+  }
 }
 
 function scrollBottom() {
