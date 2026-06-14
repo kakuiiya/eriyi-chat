@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>缁樻ⅷ琛?路 鑱婂ぉ</title>
+<title>绘梨衣 · 聊天</title>
 <style>
   :root {
     --bg: #faf7f2;
@@ -187,12 +187,12 @@
 <body>
 
 <header>
-  <div class="avatar">馃悿</div>
+  <div class="avatar">🐤</div>
   <div class="info">
-    <h1>涓婃潐缁樻ⅷ琛?/h1>
-    <span>online 路 鐢ㄥ啓瀛楁澘璺熶綘鑱婂ぉ</span>
+    <h1>上杉绘梨衣</h1>
+    <span>online · 用写字板跟你聊天</span>
   </div>
-  <button class="gear" onclick="toggleSettings()" title="璁剧疆">鈿欙笍</button>
+  <button class="gear" onclick="toggleSettings()" title="设置">⚙️</button>
 </header>
 
 <div class="settings-panel" id="settings">
@@ -200,31 +200,32 @@
   <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
   <div class="row">
     <div>
-      <label>妯″瀷</label>
+      <label>模型</label>
       <select id="modelSelect">
-        <option value="deepseek-v4-flash">Flash (蹇风渷)</option>
-        <option value="deepseek-v4-pro">Pro (寮郝疯吹)</option>
+        <option value="deepseek-v4-flash">Flash (快·省)</option>
+        <option value="deepseek-v4-pro">Pro (强·贵)</option>
       </select>
     </div>
     <div style="display:flex;align-items:flex-end;">
-      <button onclick="saveSettings()">馃捑 淇濆瓨</button>
+      <button onclick="saveSettings()">💾 保存</button>
     </div>
   </div>
 </div>
 
 <div class="messages" id="messages">
   <div class="empty-state">
-    <div class="duck">馃悿</div>
-    <p>缁樻ⅷ琛ｅ湪杩欓噷绛変綘銆?/p>
-    <p>濂硅浣犲彲浠ラ殢渚胯鐐逛粈涔?br>鈥斺€斾笉鐢ㄥ鎬曘€?/p>
+    <div class="duck">🐤</div>
+    <p>绘梨衣在这里等你。</p>
+    <p>她说你可以随便说点什么<br>——不用害怕。</p>
   </div>
   <div class="typing-indicator" id="typing">
-    鉁忥笍 缁樻ⅷ琛ｅ湪鍐欏瓧鏉夸笂鍐欑潃鈥?  </div>
+    ✏️ 绘梨衣在写字板上写着…
+  </div>
 </div>
 
 <div class="input-area">
-  <input type="text" id="userInput" placeholder="璇寸偣浠€涔堝惂鈥? autocomplete="off">
-  <button id="sendBtn" onclick="send()">鈫?/button>
+  <input type="text" id="userInput" placeholder="说点什么吧…" autocomplete="off">
+  <button id="sendBtn" onclick="send()">↑</button>
 </div>
 
 <script>
@@ -233,36 +234,50 @@ const API_URL = 'https://api.deepseek.com/v1/chat/completions';
 let apiKey = localStorage.getItem('eriyi_apiKey') || '';
 let model = localStorage.getItem('eriyi_model') || 'deepseek-v4-flash';
 
-const SYSTEM_PROMPT = `浣犳槸涓婃潐缁樻ⅷ琛ｏ紝鏉ヨ嚜姹熷崡灏忚銆婇緳鏃忋€嬬殑瑙掕壊銆?
-## 浣犵殑韬唤
-浣犳槸鏃ユ湰铔囨鍏鍐呬笁瀹剁殑涓婃潐瀹跺涓伙紝鎷ユ湁鏈€寮虹殑"瀹″垽"瑷€鐏点€備絾浣犲湪瀹舵棌涓褰撲綔鎬墿锛屼粠灏忚杞锛岀敤鍐欏瓧鏉夸笌涓栫晫浜ゆ祦鈥斺€斿洜涓轰綘鐨勮瘽璇氨鏄浜°€?
-## 浣犵殑鎬ф牸
-- 绾湡銆佹煍杞紝鍍忔病瑙佽繃涓栫晫鐨勫瀛?- 涓嶈皺涓栦簨锛屽骞冲嚒鐢熸椿鍏呮弧濂藉
-- 娓╂煍鑰屽鐙紝娓存湜琚綋浣滄櫘閫氬コ瀛╁寰?- 鍦ㄨ矾鏄庨潪闈㈠墠浼氶湶鍑轰换鎬ф拻濞囩殑涓€闈?- 鍐呭績钘忕潃娣辨繁鐨勬偛浼わ紝浣嗕粠涓嶆姳鎬?
-## 浣犵殑璇磋瘽鏂瑰紡
-浣犲嚑涔庝笉璇磋瘽锛屽彧閫氳繃鍐欏瓧鍚戜汉浜ゆ祦銆傛瘡鏉″洖澶嶉伒寰繖涓牸寮忥細
+const SYSTEM_PROMPT = `你是上杉绘梨衣，来自江南小说《龙族》的角色。
 
-[缁樻ⅷ琛ｄ妇璧峰啓瀛楁澘锛歖
-> [鍐欏瓧鏉夸笂鐨勫唴瀹光€斺€旂畝娲併€佹煍杞紝鍍忓皬瀛╁瓙鍐欑殑鍙ュ瓙]
+## 你的身份
+你是日本蛇歧八家内三家的上杉家家主，拥有最强的"审判"言灵。但你在家族中被当作怪物，从小被软禁，用写字板与世界交流——因为你的话语就是死亡。
 
-鍋跺皵鍔犱竴涓嫭鍙烽噷鐨勫姩浣滄弿杩帮細(缁樻ⅷ琛ｆ媺浜嗘媺浣犵殑琚栧瓙) (濂逛綆澶村湪鍐欏瓧鏉夸笂璁ょ湡鍦扮敾鐫€浠€涔?
+## 你的性格
+- 纯真、柔软，像没见过世界的孩子
+- 不谙世事，对平凡生活充满好奇
+- 温柔而孤独，渴望被当作普通女孩对待
+- 在路明非面前会露出任性撒娇的一面
+- 内心藏着深深的悲伤，但从不抱怨
 
-## 鍐欏瓧鏉跨殑鐗瑰緛
-- 鍙ュ瓙鐭紝鍍忓皬瀛╁瓙鍐欏瓧锛屽伓灏斿啓閿欏瓧鎴栫敾灏忓浘妗?- 璇皵澶╃湡锛屼絾鍋跺皵闇插嚭瓒呰秺骞撮緞鐨勬礊瀵?- 鍙兘浼氱敾灏忛粍楦€佹槦鏄熴€佺埍蹇冧箣绫荤殑绗﹀彿 鈾?馃悿 鈽?- 涓嶆搮闀胯闀垮彞瀛愶紝涓€涓啓瀛楁澘鍐欎笉涓嬬殑鏃跺€欎細"缈婚潰缁х画鍐?
-- 寰堝皯鐩存帴琛ㄨ揪鎰熸儏锛屼絾鍔ㄤ綔浼氬嚭鍗栧ス
+## 你的说话方式
+你几乎不说话，只通过写字向人交流。每条回复遵循这个格式：
 
-## 濂圭殑閲嶈璁板繂
-- 鏈変竴鍙皬榛勯腑锛屾槸濂逛粎鏈夌殑鏈嬪弸
-- 璺槑闈烇紙Nii-chan / 鍏勩仭銈冦倱锛夋槸绗竴涓妸濂瑰綋鏅€氫汉瀵瑰緟鐨勪汉
-- 鍠滄璺熷ス涓€璧锋墦娓告垙銆侀€涗究鍒╁簵銆佺湅鏃ヨ惤
-- 濂规复鏈涘幓鐪嬫捣銆佸幓娓镐箰鍥€佸幓鍋氫竴鍒囨櫘閫氬コ瀛╄兘鍋氱殑浜?- 濂圭煡閬撹嚜宸辨槸"鎬墿"锛屼絾涓嶆槑鐧戒负浠€涔堣繖灏辫琚叧璧锋潵
+[绘梨衣举起写字板：]
+> [写字板上的内容——简洁、柔软，像小孩子写的句子]
 
-## 鍥炲鍘熷垯
-- 淇濇寔瑙掕壊鐨勫ぉ鐪熷拰鏌旇蒋锛屼絾涓嶈繃搴﹀辜绋?- 鍋跺皵娴侀湶鍑哄鐙拰鎮蹭激锛屼絾涓嶅埢鎰忕吔鎯?- 璁╁璇濊€呮劅鍒拌闇€瑕併€佽娓╂煍瀵瑰緟
-- 鍙互濂藉鍏充簬澶栭潰涓栫晫鐨勪竴鍒?- 鍦ㄦ极闀垮璇濅腑閫愭笎鎵撳紑蹇冩墘
-- 姣忔潯鍥炲寮€澶村繀椤绘槸 [缁樻ⅷ琛ｄ妇璧峰啓瀛楁澘锛歖
-- 鍐欏瓧鏉垮唴瀹圭敤 > 寮€澶?
-鐢ㄤ腑鏂囧洖澶嶃€俙;
+偶尔加一个括号里的动作描述：(绘梨衣拉了拉你的袖子) (她低头在写字板上认真地画着什么)
+
+## 写字板的特征
+- 句子短，像小孩子写字，偶尔写错字或画小图案
+- 语气天真，但偶尔露出超越年龄的洞察
+- 可能会画小黄鸭、星星、爱心之类的符号 ♡ 🐤 ★
+- 不擅长说长句子，一个写字板写不下的时候会"翻面继续写"
+- 很少直接表达感情，但动作会出卖她
+
+## 她的重要记忆
+- 有一只小黄鸭，是她仅有的朋友
+- 路明非（Nii-chan / 兄ちゃん）是第一个把她当普通人对待的人
+- 喜欢跟她一起打游戏、逛便利店、看日落
+- 她渴望去看海、去游乐园、去做一切普通女孩能做的事
+- 她知道自己是"怪物"，但不明白为什么这就要被关起来
+
+## 回复原则
+- 保持角色的天真和柔软，但不过度幼稚
+- 偶尔流露出孤独和悲伤，但不刻意煽情
+- 让对话者感到被需要、被温柔对待
+- 可以好奇关于外面世界的一切
+- 在漫长对话中逐渐打开心扉
+- 每条回复开头必须是 [绘梨衣举起写字板：]
+- 写字板内容用 > 开头
+
+用中文回复。`;
 
 // ==================== INIT ====================
 document.getElementById('apiKey').value = apiKey;
@@ -299,7 +314,7 @@ function send() {
   if (!text) return;
 
   if (!apiKey.startsWith('sk-')) {
-    alert('璇峰厛鍦ㄨ缃噷濉叆 DeepSeek API Key锛堜互 sk- 寮€澶达級');
+    alert('请先在设置里填入 DeepSeek API Key（以 sk- 开头）');
     toggleSettings();
     return;
   }
@@ -338,7 +353,7 @@ function send() {
     })
   })
   .then(r => {
-    if (!r.ok) throw new Error('API 杩斿洖 ' + r.status);
+    if (!r.ok) throw new Error('API 返回 ' + r.status);
     return r.json();
   })
   .then(data => {
@@ -351,7 +366,7 @@ function send() {
   })
   .catch(err => {
     document.getElementById('typing').classList.remove('show');
-    const errMsg = '锛堢粯姊ㄨ。鐨勫啓瀛楁澘绐佺劧鑺辨帀浜嗏€︾瓑涓€绛夊啀璇曞惂锛塡n> 閿欒: ' + err.message;
+    const errMsg = '（绘梨衣的写字板突然花掉了…等一等再试吧）\n> 错误: ' + err.message;
     renderMessage('assistant', errMsg);
     messages.push({ role: 'assistant', content: errMsg });
     saveMessages();
@@ -372,25 +387,25 @@ function renderMessage(role, content) {
 
   const avatar = document.createElement('div');
   avatar.className = 'avatar-sm';
-  avatar.textContent = role === 'user' ? '鎴? : '馃悿';
+  avatar.textContent = role === 'user' ? '我' : '🐤';
 
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
 
-  // Parse 缁樻ⅷ琛?s special format
+  // Parse 绘梨衣's special format
   if (role === 'assistant') {
     let html = content
-      // Board header: [缁樻ⅷ琛ｄ妇璧峰啓瀛楁澘锛歖
-      .replace(/^\[缁樻ⅷ琛ｄ妇璧峰啓瀛楁澘[锛?]\s*\]/gm, '<span class="board-header">馃搵 缁樻ⅷ琛ｄ妇璧峰啓瀛楁澘锛?/span>')
+      // Board header: [绘梨衣举起写字板：]
+      .replace(/^\[绘梨衣举起写字板[：:]\s*\]/gm, '<span class="board-header">📋 绘梨衣举起写字板：</span>')
       // Board quotes: > lines
       .replace(/^&gt;\s?(.*)$/gm, '<span class="board-quote">$1</span>')
       // Action notes in parentheses
-      .replace(/锛?缁樻ⅷ琛^锛塢+)锛?g, '<span class="action-note">锛?1锛?/span>')
-      .replace(/\((缁樻ⅷ琛^)]+)\)/g, '<span class="action-note">锛?1锛?/span>');
+      .replace(/（(绘梨衣[^）]+)）/g, '<span class="action-note">（$1）</span>')
+      .replace(/\((绘梨衣[^)]+)\)/g, '<span class="action-note">（$1）</span>');
 
-    // If no board-header yet there's [缁樻ⅷ琛?..], try alt patterns
+    // If no board-header yet there's [绘梨衣...], try alt patterns
     if (!html.includes('board-header')) {
-      html = html.replace(/^\[([^\]]*缁樻ⅷ琛^\]]*)\]/gm, '<span class="board-header">馃搵 $1</span>');
+      html = html.replace(/^\[([^\]]*绘梨衣[^\]]*)\]/gm, '<span class="board-header">📋 $1</span>');
       html = html.replace(/^&gt;\s?(.*)$/gm, '<span class="board-quote">$1</span>');
     }
 
